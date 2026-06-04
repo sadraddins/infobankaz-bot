@@ -1,3 +1,4 @@
+import os
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 import math
@@ -5,13 +6,16 @@ import feedparser
 import random
 import requests
 
-TOKEN = "8858168859:AAFTZq0rUVWgYWCepmmozFL_Z5vAPq-EUCM"
-
 # ============================
-#  AI (мини‑ChatGPT)
+#  TOKEN və API KEY (ENV VARS)
 # ============================
 
-DEEPSEEK_API_KEY = "sk-644844094ef541c1898247f6e55c9e4c"
+TOKEN = os.getenv("TOKEN")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+
+# ============================
+#  AI (DeepSeek mini‑ChatGPT)
+# ============================
 
 def ask_ai(prompt: str) -> str:
     try:
@@ -24,8 +28,14 @@ def ask_ai(prompt: str) -> str:
         data = {
             "model": "deepseek-v4-pro",
             "messages": [
-                {"role": "system", "content": "Sən Azərbaycan dilində danışan maliyyə köməkçisisən. Cavabları sadə, aydın və konkret ver."},
-                {"role": "user", "content": prompt}
+                {
+                    "role": "system",
+                    "content": "Sən Azərbaycan dilində danışan maliyyə köməkçisisən. Cavabları sadə, aydın və konkret ver."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
             ],
             "thinking": {"type": "enabled"},
             "reasoning_effort": "high",
@@ -36,8 +46,6 @@ def ask_ai(prompt: str) -> str:
         r.raise_for_status()
         resp = r.json()
 
-        # DeepSeek возвращает ответ так:
-        # resp["choices"][0]["message"]["content"]
         return resp["choices"][0]["message"]["content"].strip()
 
     except Exception as e:
@@ -140,7 +148,7 @@ main_menu = ReplyKeyboardMarkup(
         ["📊 Büdcə və xərclər", "💰 Kalkulyatorlar"],
         ["🎓 Maliyyə dərsləri", "🧠 Şəxsi tövsiyələr"],
         ["📰 Xəbərlər", "🏦 Bank təklifləri"],
-        ["💬 Sual ver (AI)"]   # ← ДОБАВИЛ КНОПКУ
+        ["💬 Sual ver (AI)"]
     ],
     resize_keyboard=True
 )
