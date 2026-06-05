@@ -289,13 +289,18 @@ async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 import asyncio
 
-async def main():
+def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle))
 
     print("Bot işə düşdü...")
-    await app.run_polling()
+
+    # Явно создаём event loop для Python 3.14
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
